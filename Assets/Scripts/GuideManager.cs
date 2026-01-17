@@ -1,141 +1,90 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Guide Manager - displays step-by-step instructions
+/// UPDATED: 10 steps (Intercom removed)
+/// </summary>
 public class GuideManager : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject guidePanel;
-    public TextMeshProUGUI stepCounterText;
+    public TextMeshProUGUI stepText;
     public TextMeshProUGUI instructionText;
-    public GameObject highlightIndicator;
 
-    [Header("Step Target GameObjects")]
-    public GameObject intercomButton;
-    public GameObject eiPanel;
-    public GameObject mainPowerPanel;
-    public GameObject ocbLever;
-    public GameObject rpsSwitch;
-    public GameObject rotaryKnob;
-    public GameObject upButton;
-    public GameObject key1Button;
-    public GameObject f5cSwitch;
-    public GameObject liftDoors;
+    [Header("References")]
+    public LiftRescueManager rescueManager;
 
-    private LiftRescueManager liftManager;
-    private int currentStepIndex = 0;
-    private string[] stepInstructions;
-    private GameObject[] stepTargets;
-
-    void Start()
+    // UPDATED: 10 step instructions (Intercom removed)
+    private string[] stepInstructions = new string[]
     {
-        liftManager = FindObjectOfType<LiftRescueManager>();
-        
-        InitializeStepData();
-        
-        if (guidePanel != null)
-            guidePanel.SetActive(true);
-        
-        ShowStep(0);
+        "Step 1: Open the Earthing Indicator (EI) panel door by clicking on it",
+        "Step 2: Open the Main Power Panel door",
+        "Step 3: Switch OFF the OCB (Over Current Breaker) lever",
+        "Step 4: Check that RPS (Rope Position Switch) is ON",
+        "Step 5: Rotate the Rotary Switch from Normal to MRO position",
+        "Step 6: Press the UP button until display shows DZ",
+        "Step 7: Press KEY1 button when in Door Zone",
+        "Step 8: Switch OFF F5C (FS2) switch",
+        "Step 9: Rotate the Rotary Switch back to Normal",
+        "Step 10: Manually open the lift doors to rescue passengers"
+    };
+
+    private void Start()
+    {
+        if (rescueManager == null)
+        {
+            rescueManager = FindObjectOfType<LiftRescueManager>();
+        }
+
+        if (rescueManager != null)
+        {
+            rescueManager.onStepChanged.AddListener(OnStepChanged);
+        }
+
+        UpdateDisplay();
     }
 
-    void InitializeStepData()
+    private void OnEnable()
     {
-        // Step instructions for all 11 steps
-        stepInstructions = new string[]
-        {
-            "Step 1: Press the INTERCOM button to establish communication with the control room",
-            "Step 2: Open the Earthing Indicator (EI) panel door by clicking on it",
-            "Step 3: Open the Main Power Panel door to access the control switches",
-            "Step 4: Turn the OCB (Oil Circuit Breaker) lever to the OFF position",
-            "Step 5: Verify the RPS (Rope Position System) indicator status",
-            "Step 6: Rotate the mode selector switch to MRO (Maintenance, Repair, Operations) position",
-            "Step 7: Press the UP button (SPB3) to move the lift car",
-            "Step 8: Insert and turn KEY1 to activate manual control",
-            "Step 9: Turn the F5C switch to OFF position",
-            "Step 10: Return the rotary selector to NORMAL position",
-            "Step 11: Manually open the lift door to complete the rescue procedure"
-        };
-
-        // Corresponding GameObjects for each step
-        stepTargets = new GameObject[]
-        {
-            intercomButton,
-            eiPanel,
-            mainPowerPanel,
-            ocbLever,
-            rpsSwitch,
-            rotaryKnob,
-            upButton,
-            key1Button,
-            f5cSwitch,
-            rotaryKnob, // Same as step 6 but different action
-            liftDoors
-        };
+        UpdateDisplay();
     }
 
-    void Update()
+    private void OnStepChanged(LiftRescueManager.RescueStep newStep)
     {
-        if (liftManager == null) return;
-
-        // Check if step has advanced
-        int managerStep = (int)liftManager.GetCurrentStep();
-        
-        if (managerStep > currentStepIndex)
-        {
-            currentStepIndex = managerStep;
-            ShowStep(currentStepIndex);
-        }
+        UpdateDisplay();
     }
 
-    void ShowStep(int stepIndex)
+    public void UpdateDisplay()
     {
-        if (stepIndex >= stepInstructions.Length)
-        {
-            ShowCompletion();
-            return;
-        }
+        if (rescueManager == null) return;
 
-        // Update step counter
-        if (stepCounterText != null)
-        {
-            stepCounterText.text = $"Step {stepIndex + 1}/11";
-        }
+        int currentStepIndex = (int)rescueManager.currentStep - 1;
 
-        // Update instruction text
-        if (instructionText != null)
+        if (stepText != null)
         {
-            instructionText.text = stepInstructions[stepIndex];
-        }
-
-        // Position highlight indicator at target
-        if (highlightIndicator != null && stepTargets[stepIndex] != null)
-        {
-            highlightIndicator.SetActive(true);
-            highlightIndicator.transform.position = 
-                stepTargets[stepIndex].transform.position + Vector3.up * 0.5f;
-            highlightIndicator.transform.SetParent(stepTargets[stepIndex].transform);
-        }
-
-        Debug.Log($"Guide Mode: {stepInstructions[stepIndex]}");
-    }
-
-    void ShowCompletion()
-    {
-        if (stepCounterText != null)
-        {
-            stepCounterText.text = "COMPLETED!";
+            stepText.text = $"Step {currentStepIndex + 1} / 10";
         }
 
         if (instructionText != null)
         {
-            instructionText.text = "Congratulations! You have successfully completed the NCRTC Lift Rescue procedure!";
+            if (currentStepIndex >= 0 && currentStepIndex < stepInstructions.Length)
+            {
+                instructionText.text = stepInstructions[currentStepIndex];
+                Debug.Log($"Guide Mode: {stepInstructions[currentStepIndex]}");
+            }
+            else if (rescueManager.currentStep == LiftRescueManager.RescueStep.Completed)
+            {
+                instructionText.text = "Rescue Complete! All passengers are safe.";
+            }
         }
+    }
 
-        if (highlightIndicator != null)
+    private void OnDestroy()
+    {
+        if (rescueManager != null)
         {
-            highlightIndicator.SetActive(false);
+            rescueManager.onStepChanged.RemoveListener(OnStepChanged);
         }
-
-        Debug.Log("Guide Mode: Rescue procedure completed successfully!");
     }
 }

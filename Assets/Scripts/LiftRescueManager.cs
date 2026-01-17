@@ -3,26 +3,25 @@ using UnityEngine.Events;
 using TMPro;
 public class LiftRescueManager : MonoBehaviour
 {
+    // UPDATED: Intercom step removed - now 10 steps total
     public enum RescueStep
     {
-        Step1_Intercom = 1,
-        Step2_OpenPanels,
-        Step3_SwitchOffOCB,
-        Step4_EnsureRPSOn,
-        Step5_RotaryToMRO,
-        Step6_PressUpUntilDZ,
-        Step7_ExactDoorZoneKey,
-        Step8_SwitchOffF5C,
-        Step9_RotaryToNormal,
-        Step10_LockPanels,
-        Step11_ManualDoorOpen,
+        Step1_OpenPanels = 1,
+        Step2_SwitchOffOCB,
+        Step3_EnsureRPSOn,
+        Step4_RotaryToMRO,
+        Step5_PressUpUntilDZ,
+        Step6_ExactDoorZoneKey,
+        Step7_SwitchOffF5C,
+        Step8_RotaryToNormal,
+        Step9_LockPanels,
+        Step10_ManualDoorOpen,
         Completed
     }
     [Header("State")]
-    public RescueStep currentStep = RescueStep.Step1_Intercom;
+    public RescueStep currentStep = RescueStep.Step1_OpenPanels;
     [Header("Audio")]
     public AudioSource audioSource;
-    public AudioClip intercomClip1;
     [Header("UI References (Optional - for displaying step info)")]
     public TextMeshProUGUI stepCounterText;
     public TextMeshProUGUI instructionText;
@@ -67,19 +66,19 @@ public class LiftRescueManager : MonoBehaviour
     public static LiftRescueManager Instance;
     private float elapsedTime = 0f;
     private int mistakeCount = 0;
+    // UPDATED: 10 step instructions (Intercom removed)
     private string[] stepInstructions = new string[]
     {
-        "Step 1: Interact with passengers through intercom",
-        "Step 2: Open E&I and Main Power Panels",
-        "Step 3: Switch OFF the OCB (Over Current Breaker)",
-        "Step 4: Ensure RPS (Rope Position Switch) is ON",
-        "Step 5: Turn Rotary Switch to MRO (Manual Rescue Operation) position",
-        "Step 6: Press UP button until display shows DZ (Door Zone)",
-        "Step 7: When in exact door zone, press KEY1 to confirm",
-        "Step 8: Switch OFF F5C (FS2 switch)",
-        "Step 9: Turn Rotary Switch back to Normal position",
-        "Step 10: Close and lock both panels",
-        "Step 11: Manually open lift doors to rescue passengers"
+        "Step 1: Open E&I and Main Power Panels",
+        "Step 2: Switch OFF the OCB (Over Current Breaker)",
+        "Step 3: Ensure RPS (Rope Position Switch) is ON",
+        "Step 4: Turn Rotary Switch to MRO (Manual Rescue Operation) position",
+        "Step 5: Press UP button until display shows DZ (Door Zone)",
+        "Step 6: When in exact door zone, press KEY1 to confirm",
+        "Step 7: Switch OFF F5C (FS2 switch)",
+        "Step 8: Turn Rotary Switch back to Normal position",
+        "Step 9: Close and lock both panels",
+        "Step 10: Manually open lift doors to rescue passengers"
     };
     private void Awake()
     {
@@ -108,39 +107,30 @@ public class LiftRescueManager : MonoBehaviour
             }
         }
     }
-    // Called by InteractablePart or other scripts when intercom is activated
-    public void OnIntercomActivated()
-    {
-        if (currentStep == RescueStep.Step1_Intercom)
-        {
-            PlayRescueAudio(intercomClip1);
-            AdvanceStep();
-        }
-    }
     // Called when EI Panel is opened
     public void OnEIPanelOpened()
     {
+        Debug.Log(">>> Test: EI Panel");
         CheckPanelsOpened();
     }
     // Called when Main Power Panel is opened
     public void OnMainPowerPanelOpened()
     {
+        Debug.Log(">>> Test: Main Power");
         CheckPanelsOpened();
     }
     private void CheckPanelsOpened()
     {
-        if (currentStep == RescueStep.Step2_OpenPanels)
+        if (currentStep == RescueStep.Step1_OpenPanels)
         {
-            // Check if both panels are opened
-            // For now, we'll advance when either is opened
-            // You can add more complex logic here
             AdvanceStep();
         }
     }
     // Called when OCB lever is toggled OFF
     public void OnOCBSwitchedOff()
     {
-        if (currentStep == RescueStep.Step3_SwitchOffOCB)
+        Debug.Log(">>> Test: OCB OFF");
+        if (currentStep == RescueStep.Step2_SwitchOffOCB)
         {
             AdvanceStep();
         }
@@ -152,16 +142,17 @@ public class LiftRescueManager : MonoBehaviour
     // Called to check RPS status
     public void OnRPSChecked()
     {
-        if (currentStep == RescueStep.Step4_EnsureRPSOn)
+        Debug.Log(">>> Test: RPS Check");
+        if (currentStep == RescueStep.Step3_EnsureRPSOn)
         {
-            // Assume RPS is ON for now
             AdvanceStep();
         }
     }
     // Called when rotary switch is turned to MRO position (1->2)
     public void OnRotaryToMRO()
     {
-        if (currentStep == RescueStep.Step5_RotaryToMRO)
+        Debug.Log(">>> Test: Rotary to MRO");
+        if (currentStep == RescueStep.Step4_RotaryToMRO)
         {
             AdvanceStep();
         }
@@ -173,17 +164,17 @@ public class LiftRescueManager : MonoBehaviour
     // Called when UP button is pressed
     public void OnUpButtonPressed()
     {
-        if (currentStep == RescueStep.Step6_PressUpUntilDZ)
+        Debug.Log(">>> Test: UP Button");
+        if (currentStep == RescueStep.Step5_PressUpUntilDZ)
         {
-            // In real scenario, check if display shows "DZ"
-            // For now, advance immediately
             AdvanceStep();
         }
     }
     // Called when KEY1 button is pressed
     public void OnKey1ButtonPressed()
     {
-        if (currentStep == RescueStep.Step7_ExactDoorZoneKey)
+        Debug.Log(">>> Test: KEY1");
+        if (currentStep == RescueStep.Step6_ExactDoorZoneKey)
         {
             AdvanceStep();
         }
@@ -195,7 +186,8 @@ public class LiftRescueManager : MonoBehaviour
     // Called when F5C switch is turned OFF
     public void OnF5CSwitchedOff()
     {
-        if (currentStep == RescueStep.Step8_SwitchOffF5C)
+        Debug.Log(">>> Test: F5C OFF");
+        if (currentStep == RescueStep.Step7_SwitchOffF5C)
         {
             AdvanceStep();
         }
@@ -207,7 +199,8 @@ public class LiftRescueManager : MonoBehaviour
     // Called when rotary switch is returned to Normal position (2->1)
     public void OnRotaryToNormal()
     {
-        if (currentStep == RescueStep.Step9_RotaryToNormal)
+        Debug.Log(">>> Test: Rotary to Normal");
+        if (currentStep == RescueStep.Step8_RotaryToNormal)
         {
             AdvanceStep();
         }
@@ -219,7 +212,8 @@ public class LiftRescueManager : MonoBehaviour
     // Called when panels are locked
     public void OnPanelsLocked()
     {
-        if (currentStep == RescueStep.Step10_LockPanels)
+        Debug.Log(">>> Test: Panels Locked");
+        if (currentStep == RescueStep.Step9_LockPanels)
         {
             AdvanceStep();
         }
@@ -227,10 +221,10 @@ public class LiftRescueManager : MonoBehaviour
     // Called when doors are manually opened
     public void OnDoorsOpened()
     {
-        if (currentStep == RescueStep.Step11_ManualDoorOpen)
+        Debug.Log(">>> Test: Doors Opened");
+        if (currentStep == RescueStep.Step10_ManualDoorOpen)
         {
             AdvanceStep();
-            // This should complete the rescue
             CompleteRescue();
         }
     }
@@ -279,7 +273,7 @@ public class LiftRescueManager : MonoBehaviour
     {
         if (stepCounterText != null)
         {
-            stepCounterText.text = $"Step {(int)currentStep}/11";
+            stepCounterText.text = $"Step {(int)currentStep}/10";
         }
         if (instructionText != null && (int)currentStep - 1 < stepInstructions.Length)
         {

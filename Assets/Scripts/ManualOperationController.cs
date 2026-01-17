@@ -1,135 +1,126 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using TMPro;
+/// <summary>
+/// Manual operation controller for managing the MRO procedure.
+/// UPDATED: Enum references fixed for 10-step procedure (Intercom removed)
+/// </summary>
 public class ManualOperationController : MonoBehaviour
 {
-    [Header("Display")]
-    [Tooltip("The text display showing lift position/status")]
-    public TextMeshPro displayText;
-    
-    [Tooltip("Current floor display value")]
-    public string currentDisplay = "G";
-    [Header("Buttons")]
-    [Tooltip("UP button")]
+    [Header("References")]
+    public LiftRescueManager rescueManager;
+    [Header("Components")]
+    public GameObject eiPanel;
+    public GameObject mainPowerPanel;
+    public GameObject ocbLever;
+    public GameObject rpsIndicator;
+    public GameObject rotarySwitch;
     public GameObject upButton;
-    
-    [Tooltip("KEY1 confirmation button")]
     public GameObject key1Button;
-    [Header("Lift Movement")]
-    [Tooltip("The lift car GameObject")]
-    public Transform liftCar;
-    
-    [Tooltip("How long it takes to move between floors")]
-    public float movementDuration = 3f;
-    
-    [Tooltip("Target position when in door zone")]
-    public Vector3 doorZonePosition;
-    private LiftRescueManager procedureManager;
-    private bool isMoving = false;
-    private bool isInDoorZone = false;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable upButtonInteractable;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable key1ButtonInteractable;
-    private void Awake()
-    {
-        if (upButton != null)
-        {
-            upButtonInteractable = upButton.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
-            if (upButtonInteractable != null)
-            {
-                upButtonInteractable.selectEntered.AddListener(OnUpButtonPressed);
-            }
-        }
-        if (key1Button != null)
-        {
-            key1ButtonInteractable = key1Button.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
-            if (key1ButtonInteractable != null)
-            {
-                key1ButtonInteractable.selectEntered.AddListener(OnKey1ButtonPressed);
-            }
-        }
-    }
+    public GameObject f5cSwitch;
+    public GameObject liftDoors;
     private void Start()
     {
-        procedureManager = LiftRescueManager.Instance;
-        UpdateDisplay("G");
-    }
-    private void OnUpButtonPressed(SelectEnterEventArgs args)
-    {
-        if (procedureManager == null) return;
-        // Step 6: Press UP button to move lift to door zone
-        if (procedureManager.IsCurrentStep(LiftRescueManager.RescueStep.Step6_PressUpUntilDZ))
+        if (rescueManager == null)
         {
-            if (!isMoving && !isInDoorZone)
-            {
-                StartCoroutine(MoveToDoorZone());
-            }
+            rescueManager = FindObjectOfType<LiftRescueManager>();
         }
     }
-    private void OnKey1ButtonPressed(SelectEnterEventArgs args)
+    // Called when EI Panel is opened
+    public void OnEIPanelOpened()
     {
-        if (procedureManager == null) return;
-        // Step 7: Press KEY1 when in exact door zone
-        if (procedureManager.IsCurrentStep(LiftRescueManager.RescueStep.Step7_ExactDoorZoneKey))
+        Debug.Log(">>> EI Panel Opened");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step1_OpenPanels)
         {
-            if (isInDoorZone)
-            {
-                procedureManager.OnKey1ButtonPressed();
-                Debug.Log("KEY1 pressed - Door zone confirmed");
-            }
-            else
-            {
-                Debug.LogWarning("KEY1 pressed but not in door zone!");
-            }
+            rescueManager.OnEIPanelOpened();
         }
     }
-    private System.Collections.IEnumerator MoveToDoorZone()
+    // Called when Main Power Panel is opened
+    public void OnMainPowerOpened()
     {
-        isMoving = true;
-        
-        // Simulate lift movement
-        UpdateDisplay("1");
-        yield return new WaitForSeconds(movementDuration * 0.33f);
-        
-        UpdateDisplay("2");
-        yield return new WaitForSeconds(movementDuration * 0.33f);
-        
-        UpdateDisplay("DZ");
-        yield return new WaitForSeconds(movementDuration * 0.34f);
-        // Move lift car if assigned
-        if (liftCar != null)
+        Debug.Log(">>> Main Power Panel Opened");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step1_OpenPanels)
         {
-            liftCar.localPosition = doorZonePosition;
-        }
-        isInDoorZone = true;
-        isMoving = false;
-        // Notify procedure manager
-        if (procedureManager != null)
-        {
-            procedureManager.OnUpButtonPressed();
-        }
-        Debug.Log("Lift reached door zone (DZ)");
-    }
-    private void UpdateDisplay(string text)
-    {
-        currentDisplay = text;
-        if (displayText != null)
-        {
-            displayText.text = text;
+            rescueManager.OnMainPowerPanelOpened();
         }
     }
-    public bool IsInDoorZone()
+    // Called when OCB is switched off
+    public void OnOCBOff()
     {
-        return isInDoorZone;
-    }
-    private void OnDestroy()
-    {
-        if (upButtonInteractable != null)
+        Debug.Log(">>> OCB Switched OFF");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step2_SwitchOffOCB)
         {
-            upButtonInteractable.selectEntered.RemoveListener(OnUpButtonPressed);
+            rescueManager.OnOCBSwitchedOff();
         }
-        if (key1ButtonInteractable != null)
+    }
+    // Called when RPS is checked
+    public void OnRPSChecked()
+    {
+        Debug.Log(">>> RPS Checked");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step3_EnsureRPSOn)
         {
-            key1ButtonInteractable.selectEntered.RemoveListener(OnKey1ButtonPressed);
+            rescueManager.OnRPSChecked();
+        }
+    }
+    // Called when Rotary switch moves to MRO
+    public void OnRotaryToMRO()
+    {
+        Debug.Log(">>> Rotary to MRO");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step4_RotaryToMRO)
+        {
+            rescueManager.OnRotaryToMRO();
+        }
+    }
+    // Called when UP button is pressed
+    public void OnUpPressed()
+    {
+        Debug.Log(">>> UP Button Pressed");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step5_PressUpUntilDZ)
+        {
+            rescueManager.OnUpButtonPressed();
+        }
+    }
+    // Called when KEY1 is pressed
+    public void OnKey1Pressed()
+    {
+        Debug.Log(">>> KEY1 Pressed");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step6_ExactDoorZoneKey)
+        {
+            rescueManager.OnKey1ButtonPressed();
+        }
+    }
+    // Called when F5C is switched off
+    public void OnF5COff()
+    {
+        Debug.Log(">>> F5C Switched OFF");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step7_SwitchOffF5C)
+        {
+            rescueManager.OnF5CSwitchedOff();
+        }
+    }
+    // Called when Rotary switch moves to Normal
+    public void OnRotaryToNormal()
+    {
+        Debug.Log(">>> Rotary to Normal");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step8_RotaryToNormal)
+        {
+            rescueManager.OnRotaryToNormal();
+        }
+    }
+    // Called when panels are locked
+    public void OnPanelsLocked()
+    {
+        Debug.Log(">>> Panels Locked");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step9_LockPanels)
+        {
+            rescueManager.OnPanelsLocked();
+        }
+    }
+    // Called when doors are manually opened
+    public void OnDoorsOpened()
+    {
+        Debug.Log(">>> Doors Opened");
+        if (rescueManager != null && rescueManager.currentStep == LiftRescueManager.RescueStep.Step10_ManualDoorOpen)
+        {
+            rescueManager.OnDoorsOpened();
         }
     }
 }
