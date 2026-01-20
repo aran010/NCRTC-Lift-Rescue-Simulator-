@@ -159,10 +159,6 @@ public class FirstPersonController : MonoBehaviour
         if (obj.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>() != null)
             return true;
 
-        // Check for custom Interactable tag
-        if (obj.CompareTag("Interactable"))
-            return true;
-
         // Any object with a collider can potentially be interacted with
         return obj.GetComponent<Collider>() != null;
     }

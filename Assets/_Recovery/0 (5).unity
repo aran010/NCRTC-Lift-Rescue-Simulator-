@@ -884,6 +884,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -2617992215083428761, guid: 1cda1587393cc459e99228f0077cfc48, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1907331038}
+    - targetCorrespondingSourceObject: {fileID: -2617992215083428761, guid: 1cda1587393cc459e99228f0077cfc48, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1907331042}
     - targetCorrespondingSourceObject: {fileID: 5373010378220095633, guid: 1cda1587393cc459e99228f0077cfc48, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1515422504}
@@ -2610,6 +2613,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 716339340}
+  - component: {fileID: 716339341}
   m_Layer: 0
   m_Name: Camera Offset
   m_TagString: Untagged
@@ -2629,10 +2633,32 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.1176, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1005467363}
+  m_Children: []
   m_Father: {fileID: 1409024491}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &716339341
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716339339}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &731366327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2397086808904991732, guid: 1cda1587393cc459e99228f0077cfc48, type: 3}
@@ -3139,12 +3165,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1005467362}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.66, y: -0.19, z: -22.28}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 716339340}
+  m_Father: {fileID: 1409024491}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1005467364
 MonoBehaviour:
@@ -4345,14 +4371,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1409024488}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0000627282, y: -0.99952865, z: 0.030631388, w: 0.0020468764}
-  m_LocalPosition: {x: 53.7, y: 0, z: -6.3}
+  m_LocalRotation: {x: -0, y: -0.9999831, z: -0, w: -0.0058206124}
+  m_LocalPosition: {x: 26.64, y: 1.17, z: 16.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 716339340}
+  - {fileID: 1005467363}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 3.511, y: -179.765, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180.667, z: 0}
 --- !u!114 &1409024492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5540,7 +5567,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable
   m_InteractionManager: {fileID: 0}
-  m_Colliders: []
+  m_Colliders:
+  - {fileID: 1907331042}
   m_InteractionLayers:
     m_Bits: 1
   m_DistanceCalculationMode: 1
@@ -5613,6 +5641,27 @@ MonoBehaviour:
   m_StartingInteractionStrengthFilters: []
   m_AutoFindParentInteractableInHierarchy: 0
   m_ParentInteractableObject: {fileID: 301113235}
+--- !u!65 &1907331042
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907331034}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.019999994, y: 0.02, z: 0.02999999}
+  m_Center: {x: -0.00000023841858, y: 0, z: -0.00000029802322}
 --- !u!1 &2001931689
 GameObject:
   m_ObjectHideFlags: 0
