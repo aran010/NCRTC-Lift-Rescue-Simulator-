@@ -1419,7 +1419,7 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   activateSound: {fileID: 0}
   deactivateSound: {fileID: 0}
-  triggerStep: 6
+  triggerStep: 1
   rescueManager: {fileID: 0}
   onActivated:
     m_PersistentCalls:

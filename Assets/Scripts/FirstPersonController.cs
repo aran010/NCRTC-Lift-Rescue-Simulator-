@@ -227,7 +227,39 @@ public class FirstPersonController : MonoBehaviour
         obj.SendMessage("Toggle", SendMessageOptions.DontRequireReceiver);
         obj.SendMessage("OnClick", SendMessageOptions.DontRequireReceiver);
     }
-
+// Also notify TestModeManager if in test mode
+TestModeManager testManager = FindObjectOfType<TestModeManager>();
+if (testManager != null && testManager.enabled)
+{
+    // Determine which step was attempted based on object name
+    LiftRescueManager.RescueStep attemptedStep = GetStepFromObjectName(objName);
+    testManager.OnStepAttempted(attemptedStep);
+}
+LiftRescueManager.RescueStep GetStepFromObjectName(string objName)
+{
+    string lower = objName.ToLower();
+    
+    if (lower.Contains("ei") || lower.Contains("main") || lower.Contains("power") || lower.Contains("panel"))
+        return LiftRescueManager.RescueStep.Step1_OpenPanels;
+    if (lower.Contains("ocb"))
+        return LiftRescueManager.RescueStep.Step2_SwitchOffOCB;
+    if (lower.Contains("rps"))
+        return LiftRescueManager.RescueStep.Step3_EnsureRPSOn;
+    if (lower.Contains("rotary") && lower.Contains("mro"))
+        return LiftRescueManager.RescueStep.Step4_RotaryToMRO;
+    if (lower.Contains("up"))
+        return LiftRescueManager.RescueStep.Step5_PressUpUntilDZ;
+    if (lower.Contains("key"))
+        return LiftRescueManager.RescueStep.Step6_ExactDoorZoneKey;
+    if (lower.Contains("f5c"))
+        return LiftRescueManager.RescueStep.Step7_SwitchOffF5C;
+    if (lower.Contains("rotary"))
+        return LiftRescueManager.RescueStep.Step8_RotaryToNormal;
+    if (lower.Contains("door"))
+        return LiftRescueManager.RescueStep.Step10_ManualDoorOpen;
+    
+    return LiftRescueManager.RescueStep.Completed; // Unknown
+}
     // Draw crosshair on screen
     void OnGUI()
     {
